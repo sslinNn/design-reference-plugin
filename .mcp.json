@@ -1,7 +1,7 @@
 {
   "design-reference": {
-    "command": "python3",
-    "args": ["${CLAUDE_PLUGIN_ROOT}/mcp_server.py"],
+    "command": "uv",
+    "args": ["run", "--project", "${CLAUDE_PLUGIN_ROOT}", "python", "${CLAUDE_PLUGIN_ROOT}/mcp_server.py"],
     "env": {
       "PYTHONUNBUFFERED": "1",
       "DESIGN_REFERENCE_BACKEND_URL": "http://localhost:8000"
