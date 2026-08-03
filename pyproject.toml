@@ -8,6 +8,7 @@ dependencies = [
     # mcp.server.mcpserver.MCPServer, breaking this import — 1.12.4 is the
     # version this plugin was actually built and verified end-to-end against.
     "mcp[cli]==1.12.4",
+    "pydantic-settings>=2.14.2",
     "requests>=2.32.3",
 ]
 
