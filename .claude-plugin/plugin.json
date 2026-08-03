@@ -1,0 +1,8 @@
+{
+  "name": "design-reference",
+  "description": "Per-block design reference control for Claude Code — pick a concrete visual reference for each UI block (header, hero, ...) instead of one generic aesthetic direction for the whole page.",
+  "version": "0.1.0",
+  "author": {
+    "name": "sslinnn"
+  }
+}
