@@ -1,5 +1,6 @@
 ---
-description: Load design tokens and structural skeletons for one or more curated design references, grouped by block type (header, hero), and use them to generate on-brand UI code with low drift from the source references.
+name: design-system
+description: Load design tokens and structural skeletons for one or more curated design references from the design-reference library, grouped by block type (header, hero), and use them to generate on-brand UI code with low drift from the source references. Use when the user runs /design-system, pastes a config id (cfg_...), names curated reference ids (e.g. stripe-header, linear-hero), or asks to build a page/header/hero using the design-reference library or a saved design-reference config.
 argument-hint: [reference-id...] | [config-id]
 ---
 
@@ -14,5 +15,5 @@ A saved config id from the web gallery, or reference ids to use directly, space-
 3. If $ARGUMENTS resolved to a single `cfg_` id, call the `resolve_config` tool with that id (and `theme_anchor` if set in step 2). Otherwise call `get_design_system` with the reference ids as a list (and `theme_anchor` if set).
 4. `get_design_system`/`resolve_config` normalize every block's visual language (colors incl. accent, radii, shadows, and typography's font_family) to match the anchor block so blocks always compose into one design — only structure (skeleton) and component-specific sizes/spacing stay per block's own reference. Don't ask the user to pick an anchor up front; only act on it if they mention one, and only re-run with a different `theme_anchor` if they ask to change it after seeing the result.
 5. If the tool call fails because a reference id is unknown, call `list_references` to show the user what's available and ask them to pick again. If it fails because the config id is unknown, tell the user the link may have expired and point them back to the gallery. If it fails because of an unknown `theme_anchor`, tell the user which block types were actually requested and ask in plain language which one should set the theme.
-5. For each block type returned (e.g. `header`, `hero`), use its `skeleton` as the structural scaffold and its `tokens` as the concrete values (colors, typography, spacing, radii, shadows) when generating that block's code. Do not invent structure or values outside what these two fields specify.
-6. Persist the resolved design tokens to `.design-system.json` in the project root so follow-up requests in this conversation can reference them without calling the tool again.
+6. For each block type returned (e.g. `header`, `hero`), use its `skeleton` as the structural scaffold and its `tokens` as the concrete values (colors, typography, spacing, radii, shadows) when generating that block's code. Do not invent structure or values outside what these two fields specify.
+7. Persist the resolved design tokens to `.design-system.json` in the project root so follow-up requests in this conversation can reference them without calling the tool again.
