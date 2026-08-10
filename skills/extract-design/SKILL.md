@@ -106,8 +106,11 @@ still image.
       change → leave that element type out of `motion.entrance`.
     - Omit the whole `motion` group if the reference has neither hover nor
       entrance animation on anything — most references, especially simple
-      headers, won't have one or both. See `stripe-header.json` for a
-      worked example.
+      headers, won't have one or both. **If two skeleton elements share a
+      `type` but have different `variant`s (e.g. a ghost and a solid
+      `cta_button`), key their motion entries `"type:variant"`** instead
+      of the bare type — they can genuinely animate differently. See
+      `stripe-header.json` for a worked example.
     - If an entrance effect is clearly JS-driven with no readable inline
       `transition` (e.g. a class toggled by an intersection observer),
       estimate duration/easing from what's visually observed and flag it
