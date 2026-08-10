@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>design — per-block design reference control for Claude Code</title>
+<style>
+  :root {
+    --bg: #000000;
+    --text-primary: #ffffff;
+    --text-secondary: #c9c9c9;
+    --accent: #0099ff;
+    --font: system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---- header (stripe-header) ---- */
+
+  header.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: 72px;
+    background: var(--bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  header.site-header .container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .logo {
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  .logo span { color: var(--accent); }
+
+  nav.main-nav {
+    display: flex;
+    gap: 32px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  nav.main-nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  nav.main-nav a:hover { color: var(--text-primary); }
+
+  .header-ctas {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font);
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 8px;
+  }
+
+  .btn-ghost:hover { background: rgba(255, 255, 255, 0.06); }
+
+  .btn-solid-header {
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 18px;
+    border-radius: 8px;
+  }
+
+  .btn-solid-header:hover { opacity: 0.9; }
+
+  /* ---- hero (framer-hero) ---- */
+
+  section.hero {
+    position: relative;
+    padding: 140px 0;
+    overflow: visible;
+  }
+
+  .hero-glow {
+    position: absolute;
+    left: 50%;
+    top: 60%;
+    width: 700px;
+    height: 200px;
+    transform: translate(-50%, -50%);
+    background: var(--accent);
+    opacity: 0.35;
+    filter: blur(80px);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  h1.headline {
+    max-width: 700px;
+    margin: 0;
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  h1.headline em {
+    font-style: normal;
+    color: var(--text-secondary);
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  .btn-solid-hero {
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 999px;
+  }
+
+  .btn-solid-hero:hover { opacity: 0.9; }
+
+  .btn-outline-hero {
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 600;
+    padding: 13px 27px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+  }
+
+  .btn-outline-hero:hover { border-color: rgba(255, 255, 255, 0.5); }
+
+  @media (max-width: 720px) {
+    nav.main-nav { display: none; }
+    h1.headline { font-size: 38px; }
+    section.hero { padding: 80px 0; }
+    .hero-glow { width: 90vw; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <div class="logo"><span>◆</span> design</div>
+      <nav class="main-nav">
+        <a href="#design-system">Design System</a>
+        <a href="#extract-design">Extract Design</a>
+        <a href="#references">References</a>
+        <a href="#docs">Docs</a>
+        <a href="https://github.com/sslinnn/design-reference-plugin">GitHub</a>
+      </nav>
+      <div class="header-ctas">
+        <a class="btn btn-ghost" href="#docs">Docs</a>
+        <a class="btn btn-solid-header" href="#install">Install</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="container hero-content">
+      <h1 class="headline">Stripe's header. Framer's hero.<br><em>One page, no seam.</em></h1>
+      <div class="hero-ctas">
+        <a class="btn btn-solid-hero" href="#install">/plugin install design</a>
+        <a class="btn btn-outline-hero" href="https://github.com/sslinnn/design-reference-plugin">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

@@ -1,6 +1,8 @@
 {
-  "design-reference": {
-    "url": "http://localhost:8000/mcp",
-    "transport": "streamable-http"
+  "mcpServers": {
+    "design-reference": {
+      "type": "http",
+      "url": "http://localhost:8000/mcp"
+    }
   }
 }
