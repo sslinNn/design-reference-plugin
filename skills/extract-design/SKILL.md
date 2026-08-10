@@ -1,7 +1,7 @@
 ---
 name: extract-design
 description: Read a design reference screenshot and produce tokens/skeleton JSON matching the curated reference schema, for pasting into the design-reference web app's /admin form. Use when the user runs /extract-design, or asks to extract/curate design tokens or a skeleton from a screenshot for the design-reference library.
-argument-hint: <screenshot-path> <block-type> <source-url>
+argument-hint: <screenshot-path> <block-type> [source-url]
 ---
 
 ## Arguments
@@ -10,9 +10,13 @@ Screenshot path, block type (header or hero), and the reference's live
 source URL, space-separated: $ARGUMENTS
 
 The screenshot is the basis for colors/typography/skeleton (it's the
-agreed-upon, already-captured state). The source URL is only used for the
-live motion-inspection steps below (step 9) — motion can't be read from a
-still image.
+agreed-upon, already-captured state). The source URL is used for the live
+hover-inspection step below (step 11) — hover can't be read from a still
+image. It's optional: when curating from a source with no interactive live
+page at all (e.g. a marketplace's preview GIF/video for a template with no
+public URL), skip hover entirely and rely on frame-sampling for ambient
+motion instead (see step 11's ambient bullet) — don't invent a source URL
+or fake a hover reading to fill the gap.
 
 ## Instructions
 
@@ -89,8 +93,10 @@ still image.
     input"` or `"style": "stacked-photo-cards"` (see figma-hero's
     `mockup_image` for a worked example). An element type with no content
     hint tends to get generated as an empty placeholder box later.
-11. **`motion` (needs the live `<source-url>`, not the screenshot — invoke
-    the claude-in-chrome skill first if it isn't already loaded):**
+11. **`motion` (hover needs a live `<source-url>`, not the screenshot —
+    invoke the claude-in-chrome skill first if it isn't already loaded;
+    ambient can work from either a live URL or sampled frames of a
+    preview capture, see below):**
     - **Hover.** For each interactive skeleton element (`cta_button`,
       `nav`, and similar) navigate to the element, read its baseline
       computed style, trigger hover, read computed style again, and diff
@@ -104,17 +110,32 @@ still image.
       snapshot the element's `opacity`/`transform`, scroll it into view,
       wait roughly half a second to a second, snapshot again, and diff. No
       change → leave that element type out of `motion.entrance`.
-    - Omit the whole `motion` group if the reference has neither hover nor
-      entrance animation on anything — most references, especially simple
-      headers, won't have one or both. **If two skeleton elements share a
+    - **Ambient.** A continuous loop with no trigger at all (a slow
+      Ken Burns zoom/pan on a hero photo, a shimmering gradient) — check
+      for it even when there's no `<source-url>` to interact with (e.g.
+      when working from a marketplace preview GIF/video instead of a live
+      site): sample a few frames spread across the loop and compare. If
+      the visual content is identical frame to frame, there's no ambient
+      motion — leave it out. If it visibly shifts, record `type`
+      (`zoom`/`pan`/`shimmer`/...), `duration` for one full cycle (real
+      timing from the frames/GIF metadata if available), and `easing` if
+      inferrable — flag `scale`/`direction` as estimated, not measured,
+      since a still-frame comparison can't give exact numbers the way a
+      live computed-style read can.
+    - Omit the whole `motion` group if the reference has none of
+      hover/entrance/ambient — most references, especially simple
+      headers, won't have all three. **If two skeleton elements share a
       `type` but have different `variant`s (e.g. a ghost and a solid
       `cta_button`), key their motion entries `"type:variant"`** instead
       of the bare type — they can genuinely animate differently. See
-      `stripe-header.json` for a worked example.
-    - If an entrance effect is clearly JS-driven with no readable inline
-      `transition` (e.g. a class toggled by an intersection observer),
-      estimate duration/easing from what's visually observed and flag it
-      as low-confidence in step 13 rather than inventing exact numbers.
+      `stripe-header.json` for a hover-only worked example and
+      `motionsites-portal-hero.json` for an ambient-only one.
+    - If an entrance or ambient effect is clearly JS-driven with no
+      readable inline `transition`/`animation` (e.g. a class toggled by an
+      intersection observer, or no live URL at all — only a preview
+      capture), estimate duration/easing from what's visually observed and
+      flag it as low-confidence in step 13 rather than inventing exact
+      numbers.
 12. Output only the `tokens` and `skeleton` JSON objects, formatted and
     ready to paste directly into the /admin form's two textareas. Do not
     output the full seed-file shape (no id/name/block_type wrapper) — the
