@@ -56,8 +56,16 @@ description, at the same level of craft as any other skeleton element
 (spacing, borders, depth called out in existing step 8 guidance). This is
 not a new capability so much as making the existing "don't ship
 placeholder-quality components" instruction concrete and mandatory for
-this element type specifically, with worked guidance on what "real" means
-per common `style` values.
+this element type specifically.
+
+(This section originally called for "worked guidance on what 'real' means
+per common `style` values" — a lookup table from `style` strings to what a
+good mock of that kind contains. The implementing plan dropped this in
+favor of the general craft bar above, deliberately: a verification dry run
+against `figma-hero`'s `stacked-cards` style produced a genuinely
+well-executed mock — three distinct overlapping cards with real content —
+from the general guidance alone, with no per-style table. Recorded here so
+the drop reads as a decision, not a gap.)
 
 **`background_image`** (photographic/textural) — a real image file,
 obtained through a fallback chain evaluated once per element, each step
@@ -65,10 +73,15 @@ tried only if the previous one wasn't available or didn't produce a
 usable result:
 
 1. **Image-generation tool available in the session** → generate an image
-   whose subject/composition matches `style`, save it to the project.
-2. **No image-gen tool** → search for and fetch a suitable stock/CC-licensed
-   photo via `WebFetch` (or an available search tool) matching `style`,
-   save it to the project.
+   whose subject/composition matches `style`.
+2. **No image-gen tool** → search for a suitable stock/CC-licensed photo
+   (`WebSearch` or an available search tool), resolve its direct file URL,
+   and download the bytes via `curl`/`wget` through Bash. `WebFetch` can
+   locate and read the page and check the license, but it returns a
+   text/markdown rendering — it cannot save binary content, so it is not
+   the download step itself (confirmed during implementation: an earlier
+   draft of this rule named `WebFetch` as the downloader, which doesn't
+   work).
 3. **Neither produced a usable image** → ask the user: supply their own
    file (path), or accept a flat gradient placeholder as a last resort —
    same tone as the existing gradient guidance in step 7 ("a flat
@@ -77,12 +90,24 @@ usable result:
 
 ### Asset storage
 
-Every sourced/generated `background_image` file is downloaded into the
-user's project (e.g. `./assets/<block>-<element-purpose>.jpg`) and
-referenced by a relative path in the generated markup/CSS — never hotlinked
-to an external URL. Rationale: offline/build-safe, doesn't silently break
-if the source disappears or changes, reads as a normal project asset
-rather than a dependency on a third party.
+A file obtained via step 1 or 2 above (not one the user hands over
+directly in step 3) is resized/compressed before saving: long edge around
+1600–2000px, roughly under 300KB (an available tool like ImageMagick,
+`sips`, or `ffmpeg` can do this; an image-generation tool's own output is
+often already close to this size). If no resize tool is available, ship
+the file as-is but tell the user it's unoptimized — added after
+implementation surfaced that an unresized fetch can be a multi-MB DSLR
+original, a real page-weight problem for a hero background.
+
+However the file was obtained, it's saved wherever the project already
+keeps static assets — a framework's `public/`/`static/` directory, or a
+plain `./assets/` folder for a flat HTML page — and referenced the way the
+project already references its other images, never hotlinked to an
+external URL. Rationale: offline/build-safe, doesn't silently break if the
+source disappears or changes, reads as a normal project asset rather than
+a dependency on a third party. (A literal `./assets/...` path only works
+for a flat HTML project; a framework project needs its own static-asset
+convention, e.g. Next.js/Vite's `public/`.)
 
 ### Where this lives in `design-system/SKILL.md`
 
