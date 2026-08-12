@@ -83,6 +83,20 @@ Same shape as `background_image`'s chain, with a video-specific step 4:
    *that* element type's own existing fallback chain from the top
    (image-gen → stock photo → ask → gradient last resort). This is a
    legitimate, spec-sanctioned degrade path, not a failure state to hide.
+   A `scroll.scrub` entry on the downgraded element has nothing left to
+   interpolate (`properties`/`from`/`to` never applied to the video case)
+   — drop it and tell the user, don't invent values for it. This same
+   downgrade-or-ask choice also applies if a video *was* sourced but
+   couldn't be prepared down to a reasonable size (see File preparation's
+   ceiling) — shipping an unprocessed multi-MB loop isn't a real option.
+
+"Available," throughout this whole area of the rule (image-gen, video-gen,
+resize, and transcode tool checks alike), means a tool already present in
+the session/environment — never install one to satisfy a check. An
+earlier draft of this rule stated that only for the image-resize case and
+a session read the video/transcode case as licensing an install; the
+generation-side text now states the rule once, up front, governing every
+tool check in the bullet.
 
 ### File preparation
 
@@ -101,9 +115,16 @@ different in kind, not just degree:
   it through the existing image size/compression rule from the
   `mockup-images` sub-project — a poster frame is just an image once
   extracted, no new rule needed for it.
-- If no resize/transcode tool is available, same posture as the image
-  rule: ship what was obtained but tell the user, don't silently degrade
-  further without saying so.
+- If no resize/transcode tool is genuinely available (not one to install
+  for the occasion — see the availability note above), same posture as the
+  image rule: ship what was obtained but tell the user, don't silently
+  degrade further without saying so. That posture has a ceiling, though:
+  video is heavy enough that "unoptimized" and "a real page-weight
+  problem" are different outcomes, not the same one at a different scale.
+  If the untranscoded file is more than a few MB, ask the user for a
+  smaller/shorter clip (or a poster image to pair with it) instead of
+  shipping it as obtained, or downgrade to `background_image` — a
+  multi-MB autoplay loop is worse for a real visitor than a static photo.
 
 ### `scroll.scrub` on `background_video`
 
@@ -116,6 +137,15 @@ video-scrub entry and are omitted from it. `scroll.parallax` and
 `cursor.magnetic`/`cursor.spotlight` need no special case at all; they
 already move/tint the element as a whole regardless of what's inside it.
 
+Autoplay and scroll-scrub fight each other if both drive `currentTime` at
+once — the video's own `loop`/`autoplay` playback keeps advancing while
+the scroll handler is also setting it. Generation pauses native playback
+for the duration a `scroll.scrub` entry is driving the element, and under
+`prefers-reduced-motion: reduce` (which disables the scrub, same as any
+other `scroll`/`cursor` effect) a video-scrub element has no `to` value to
+rest at the way a CSS-property scrub does — it holds its last frame
+(`currentTime` at the video's full `duration`) instead.
+
 ### Capture: `extract-design`
 
 Two small additions, not a new procedure:
@@ -124,7 +154,13 @@ Two small additions, not a new procedure:
   background rendered as a `<video>` tag (check the live page, not just
   the screenshot — a still image can't tell photo from video) is
   `background_video`, not `background_image`; describe its content in
-  `style` the same way `background_image` already is.
+  `style` the same way `background_image` already is. That turned out to
+  require widening step 10 itself, not just step 4 — step 10 only covered
+  mockup/panel `style` descriptions before this plan, and never actually
+  said `background_image` (already a real element type) needed one
+  either. Both background element types get folded into step 10 together,
+  since `design-system`'s whole sourcing chain for both searches/generates
+  against `style`.
 - In the existing Scroll capture bullet (from the scroll/cursor
   sub-project): if the element under test is a `background_video` and
   scrolling drives its `video.currentTime` in sync with scroll position
@@ -141,9 +177,17 @@ Two small additions, not a new procedure:
   the `scroll.scrub`-on-video special case.
 - `skills/extract-design/SKILL.md`: the two small additions above (element
   cataloguing, Scroll bullet note).
-- `design-reference-backend/docs/reference-format.md`: document
-  `background_video` as a valid skeleton element type, matching the
-  companion-commit pattern used for `ambient` and `scroll`/`cursor`.
+- `design-reference-backend/docs/reference-format.md`: turned out to need
+  one companion-commit sentence after all — not because skeleton element
+  types are enumerated there (they aren't; `background_video` is just
+  another free-form `type` string, same as `background_image`, and
+  needed no doc change on that count), but because the doc's `motion`
+  section *does* document `scrub`'s exact field list (`properties`,
+  `from`, `to`, `range`), and that list needed the same
+  `background_video` exception (`properties`/`from`/`to` omitted, only
+  `range` applies) that the skill files got. The distinction that
+  mattered was "is this schema documented with a fixed field list,"
+  not "is this a motion field vs. an element type."
 
 ## Open questions / risks
 
