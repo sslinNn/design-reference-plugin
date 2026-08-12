@@ -11,12 +11,13 @@ source URL, space-separated: $ARGUMENTS
 
 The screenshot is the basis for colors/typography/skeleton (it's the
 agreed-upon, already-captured state). The source URL is used for the live
-hover-inspection step below (step 11) — hover can't be read from a still
-image. It's optional: when curating from a source with no interactive live
-page at all (e.g. a marketplace's preview GIF/video for a template with no
-public URL), skip hover entirely and rely on frame-sampling for ambient
-motion instead (see step 11's ambient bullet) — don't invent a source URL
-or fake a hover reading to fill the gap.
+hover- and cursor-inspection steps below (step 11) — neither can be read
+from a still image. It's optional: when curating from a source with no
+interactive live page at all (e.g. a marketplace's preview GIF/video for a
+template with no public URL), skip hover and cursor entirely and rely on
+frame-sampling for ambient/scroll motion instead (see step 11's ambient
+and scroll bullets) — don't invent a source URL or fake a hover/cursor
+reading to fill the gap.
 
 ## Instructions
 
@@ -133,7 +134,9 @@ or fake a hover reading to fill the gap.
       position) is `parallax`; a value that changes once near entry and
       then holds steady is the existing `entrance` trigger, not a new
       one — record nothing here in that case. Compute `parallax.rate` as
-      `Δelement / Δscroll` between two samples. Without a live URL, the
+      `Δelement / Δscroll` between two samples, and record `axis` as
+      whichever direction (`"x"`/`"y"`) the offset actually moves along.
+      Without a live URL, the
       same classification works from frames sampled across a
       scroll-recording GIF/video (the same fallback `ambient` already
       uses) — with no such recording, leave `scroll` out for that element
@@ -158,7 +161,7 @@ or fake a hover reading to fill the gap.
       simple headers, won't have all five. **If two skeleton elements
       share a `type` but have different `variant`s (e.g. a ghost and a
       solid `cta_button`), key their motion entries `"type:variant"`**
-      instead of the bare type — they can genuinely animate differently,
+      instead of the bare type — they can genuinely animate differently;
       this applies to `scroll`/`cursor` entries too. See
       `stripe-header.json` for a hover-only worked example and
       `motionsites-portal-hero.json` for an ambient-only one.
