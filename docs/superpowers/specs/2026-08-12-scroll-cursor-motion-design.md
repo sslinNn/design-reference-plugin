@@ -160,11 +160,16 @@ effect, not the mechanism** — pick whatever fits the target stack, invent
 nothing beyond what the token specifies.
 
 **`scroll.parallax` / `scroll.scrub`.** Prefer native CSS scroll-driven
-animations where the target supports them: `animation-timeline: view()`
-with a `@keyframes` for `parallax`, `animation-timeline: scroll()` with a
-`@keyframes` built from `from`/`to` for `scrub` — no JS, no jank. Where
-broader compatibility or a framework's own primitive is needed, fall back
-to a scroll listener + `requestAnimationFrame` computing the output from
+animations where the target supports them: `animation-timeline: scroll()`
+with a `@keyframes` scaled from `rate` for `parallax` (`scroll()` tracks
+the whole scrollable range, matching `parallax`'s "keeps moving at any
+scroll position" definition), `animation-timeline: view()` with a
+`@keyframes` built from `from`/`to` and `range` mapped to its
+`animation-range` for `scrub` (`view()` tracks the subject element's own
+transit through the viewport, matching `scrub`'s default
+`"enters-to-exits-viewport"` range) — no JS, no jank. Where broader
+compatibility or a framework's own primitive is needed, fall back to a
+scroll listener + `requestAnimationFrame` computing the output from
 `rate * scrollY` (`parallax`) or `clamp((scrollY - start) / (end - start),
 0, 1)` interpolated between `from` and `to` (`scrub`).
 
