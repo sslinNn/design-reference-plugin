@@ -93,10 +93,10 @@ or fake a hover reading to fill the gap.
     input"` or `"style": "stacked-photo-cards"` (see figma-hero's
     `mockup_image` for a worked example). An element type with no content
     hint tends to get generated as an empty placeholder box later.
-11. **`motion` (hover needs a live `<source-url>`, not the screenshot —
-    invoke the claude-in-chrome skill first if it isn't already loaded;
-    ambient can work from either a live URL or sampled frames of a
-    preview capture, see below):**
+11. **`motion` (hover and cursor need a live `<source-url>`, not the
+    screenshot — invoke the claude-in-chrome skill first if it isn't
+    already loaded; ambient and scroll can work from either a live URL or
+    sampled frames of a preview capture, see below):**
     - **Hover.** For each interactive skeleton element (`cta_button`,
       `nav`, and similar) navigate to the element, read its baseline
       computed style, trigger hover, read computed style again, and diff
@@ -122,17 +122,49 @@ or fake a hover reading to fill the gap.
       inferrable — flag `scale`/`direction` as estimated, not measured,
       since a still-frame comparison can't give exact numbers the way a
       live computed-style read can.
+    - **Scroll (`parallax` vs `scrub`).** With a live URL and
+      claude-in-chrome: scroll the page in increments spanning the target
+      element's transit through the viewport (e.g. 0/25/50/75/100%),
+      reading the element's computed `transform` (or the relevant
+      property) at each step. A value that keeps changing continuously
+      and monotonically across the whole transit is `scrub`; a
+      constant-rate offset that isn't tied to entering/exiting the
+      viewport (keeps moving as long as the page scrolls, at any scroll
+      position) is `parallax`; a value that changes once near entry and
+      then holds steady is the existing `entrance` trigger, not a new
+      one — record nothing here in that case. Compute `parallax.rate` as
+      `Δelement / Δscroll` between two samples. Without a live URL, the
+      same classification works from frames sampled across a
+      scroll-recording GIF/video (the same fallback `ambient` already
+      uses) — with no such recording, leave `scroll` out for that element
+      rather than guessing a rate.
+    - **Cursor (`magnetic` vs `spotlight`).** Requires a live URL and
+      claude-in-chrome — there's no frame-sampling fallback for this one,
+      unlike ambient/scroll: cursor-driven effects have no honest way to
+      be inferred from footage with no visible cursor. Move the cursor to
+      a few points at increasing distance from the element (not directly
+      on it, to distinguish from `:hover`) and diff computed `transform`
+      at each — a shift toward the cursor before real hover is
+      `magnetic`; record `strength`/`max_distance`/`radius` from the
+      observed offsets. Move the cursor to a few points within the
+      block/section and check whether a glow/gradient's position tracks
+      it — that's `spotlight`; `scope` is however wide the tracking
+      actually extends (test points outside the element itself, within
+      its section, to tell `"element"` from `"section"`). No visible
+      response to cursor movement at any tested point → leave both out
+      for that element.
     - Omit the whole `motion` group if the reference has none of
-      hover/entrance/ambient — most references, especially simple
-      headers, won't have all three. **If two skeleton elements share a
-      `type` but have different `variant`s (e.g. a ghost and a solid
-      `cta_button`), key their motion entries `"type:variant"`** instead
-      of the bare type — they can genuinely animate differently. See
+      hover/entrance/ambient/scroll/cursor — most references, especially
+      simple headers, won't have all five. **If two skeleton elements
+      share a `type` but have different `variant`s (e.g. a ghost and a
+      solid `cta_button`), key their motion entries `"type:variant"`**
+      instead of the bare type — they can genuinely animate differently,
+      this applies to `scroll`/`cursor` entries too. See
       `stripe-header.json` for a hover-only worked example and
       `motionsites-portal-hero.json` for an ambient-only one.
-    - If an entrance or ambient effect is clearly JS-driven with no
-      readable inline `transition`/`animation` (e.g. a class toggled by an
-      intersection observer, or no live URL at all — only a preview
+    - If an entrance, ambient, or scroll effect is clearly JS-driven with
+      no readable inline `transition`/`animation` (e.g. a class toggled by
+      an intersection observer, or no live URL at all — only a preview
       capture), estimate duration/easing from what's visually observed and
       flag it as low-confidence in step 13 rather than inventing exact
       numbers.
