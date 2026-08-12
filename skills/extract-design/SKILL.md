@@ -48,7 +48,11 @@ reading to fill the gap.
    modeled with a `subtext` and a centered `cta_button` that don't exist
    on the real page at all. If an element type (subtext, CTA, badge...)
    isn't clearly visible in the screenshot, leave it out — do not add it
-   because "hero sections usually have one."
+   because "hero sections usually have one." A full-bleed hero background
+   is `background_video`, not `background_image`, if it's actually a
+   `<video>` tag on the live page — a still screenshot can't tell photo
+   from video, so check the live page, not just the screenshot, before
+   typing this element.
 5. **Check alignment per element, don't default to centered.** Look at
    the actual x-position of the headline/subtext/buttons relative to the
    viewport width. Left-aligned marketing heroes are at least as common
