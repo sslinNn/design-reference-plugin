@@ -92,12 +92,16 @@ reading to fill the gap.
     (e.g. `"glow-panel-below"`) so the generator knows what to center it
     behind later — a glow with no anchor point tends to end up mis-sized
     or clipped.
-10. **If a skeleton element is a mockup/panel (product screenshot, code
-    editor, chat UI...), describe what kind of content it shows**, not
+10. **If a skeleton element is a mockup/panel, or a `background_image`/
+    `background_video`, describe what kind of content it shows**, not
     just that it exists — e.g. `"style": "chat-interface-with-prompt-
-    input"` or `"style": "stacked-photo-cards"` (see figma-hero's
-    `mockup_image` for a worked example). An element type with no content
-    hint tends to get generated as an empty placeholder box later.
+    input"` or `"style": "stacked-photo-cards"` for a mockup (see
+    figma-hero's `mockup_image` for a worked example), or `"style":
+    "slow-drone-footage-over-mountains"` for a background. An element
+    type with no content hint tends to get generated as an empty
+    placeholder box later — and for `background_image`/`background_video`
+    specifically, the description is also what the sourcing/generation
+    fallback chain searches or generates against.
 11. **`motion` (hover and cursor need a live `<source-url>`, not the
     screenshot — invoke the claude-in-chrome skill first if it isn't
     already loaded; ambient and scroll can work from either a live URL or
@@ -140,7 +144,11 @@ reading to fill the gap.
       one — record nothing here in that case. Compute `parallax.rate` as
       `Δelement / Δscroll` between two samples, and record `axis` as
       whichever direction (`"x"`/`"y"`) the offset actually moves along.
-      Without a live URL, the
+      If the element under test is a `background_video`, what moves with
+      scroll may be its `video.currentTime` (readable from the live page)
+      rather than a CSS property — that's still `scrub`; record `type`
+      and `range` and omit `properties`/`from`/`to`, since the video's
+      own duration is the implicit range. Without a live URL, the
       same classification works from frames sampled across a
       scroll-recording GIF/video (the same fallback `ambient` already
       uses) — with no such recording, leave `scroll` out for that element
