@@ -1,6 +1,6 @@
 ---
 name: design-system
-description: Load design tokens and structural skeletons for one or more curated design references from the design-reference library, grouped by block type (header, hero), and use them to generate on-brand UI code with low drift from the source references. Use when the user runs /design-system, pastes a config id (cfg_...), names curated reference ids (e.g. stripe-header, linear-hero), asks to build a page/header/hero using the design-reference library or a saved design-reference config, or wants to swap just one block (e.g. "change the header, keep the hero") on a page already generated this way.
+description: Load design tokens and structural skeletons for one or more curated design references from the design-reference library, grouped by block type (header, hero, footer, dashboard, pricing, features), and use them to generate on-brand UI code with low drift from the source references. Use when the user runs /design-system, pastes a config id (cfg_...), names curated reference ids (e.g. stripe-header, linear-hero), asks to build a page or block using the design-reference library or a saved design-reference config, or wants to swap just one block (e.g. "change the header, keep the hero") on a page already generated this way.
 argument-hint: "[reference-id...] | [config-id]"
 ---
 

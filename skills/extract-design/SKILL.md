@@ -6,7 +6,7 @@ argument-hint: <screenshot-path> <block-type> [source-url]
 
 ## Arguments
 
-Screenshot path, block type (header or hero), and the reference's live
+Screenshot path, block type (header, hero, footer, dashboard, pricing, or features), and the reference's live
 source URL, space-separated: $ARGUMENTS
 
 The screenshot is the basis for colors/typography/skeleton (it's the
