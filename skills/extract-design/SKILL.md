@@ -26,11 +26,11 @@ reading to fill the gap.
    header and hero visible), extract only the region matching the
    `<block-type>` argument — don't let the other region's colors/type
    bleed into what you record.
-2. Read `docs/reference-format.md` in design-reference-backend for the
-   exact tokens/skeleton schema, including the `gradient` group. Tokens
-   must include a `colors` group at minimum (background, text_primary,
-   text_secondary, accent); skeleton must include a `layout` string and
-   may include an `elements` array.
+2. Read `docs/reference-format.md` in design-reference-web for the
+   exact tokens/skeleton schema, including the `gradient`, `texture`, and
+   `cursor_style` groups. Tokens must include a `colors` group at minimum
+   (background, text_primary, text_secondary, accent); skeleton must
+   include a `layout` string and may include an `elements` array.
 3. **If the requested block type doesn't actually exist as a recognizable
    pattern on this screenshot, say so instead of forcing an extraction.**
    Not every site has a classic marketing hero (headline + subtext + CTA)
@@ -69,8 +69,12 @@ reading to fill the gap.
    than a slightly-off secondary text color would. If unsure between two
    close shades, prefer the value that would render correctly against the
    sampled background (contrast should look right at a glance).
-7. Typography: font family if identifiable (note low confidence if
-   guessing a fallback stack like `system-ui, sans-serif`), and estimate
+7. Typography: identify font faces by comparison — the body family (set
+   `font_family`; note low confidence if guessing a fallback stack like
+   `system-ui, sans-serif`) and, if the site pairs a distinct display
+   face with a plainer body face (e.g. a serif or a heavy condensed
+   headline face), record that as `display_font` too — don't force one
+   family to do every job when the reference clearly uses two. Estimate
    pixel sizes by comparison to known landmarks rather than guessing a
    round "88px"-style number — e.g. a header nav bar is typically
    60–72px tall, so a headline that's roughly 3-4x the nav-bar text
@@ -92,6 +96,16 @@ reading to fill the gap.
     (e.g. `"glow-panel-below"`) so the generator knows what to center it
     behind later — a glow with no anchor point tends to end up mis-sized
     or clipped.
+9a. **`texture` (separate group from `gradient`):** only add this if the
+    screenshot shows a subtle surface treatment over the background —
+    film grain, noise, a dot grid, or a repeating pattern. Most
+    references won't have one; don't add it speculatively. Record the
+    `type` (`grain`/`noise`/`dots`/`grid`/`pattern`), `opacity` (how
+    strong the treatment reads), `blend` if it's clearly composited (a
+    `mix-blend-mode` like `overlay` or `soft-light`), `size` for the
+    repeating unit (grid/dot spacing), and `color` if tinted. A texture
+    that reads as a wash of noise over everything is `grain` at low
+    opacity, not a `gradient` — the two are easy to confuse.
 10. **If a skeleton element is a mockup/panel, or a `background_image`/
     `background_video`, describe what kind of content it shows**, not
     just that it exists — e.g. `"style": "chat-interface-with-prompt-
@@ -168,6 +182,15 @@ reading to fill the gap.
       its section, to tell `"element"` from `"section"`). No visible
       response to cursor movement at any tested point → leave both out
       for that element.
+    - **`cursor_style` (replacement cursor, distinct from `motion.cursor`
+      effects).** Requires a live URL — a custom cursor (a dot, ring, or
+      mix that replaces the native one) is only visible on a live page,
+      never in a screenshot. Check whether the site swaps the native
+      cursor for a custom element on interactive surfaces. If it does,
+      record `type` (`dot`/`ring`/`arrow`/`mix`), `color`, `border_color`
+      if it's a ring, `size`, `scale_hover` if it grows on hover, and
+      `mix_blend_mode` if the cursor is composited with the page. If the
+      site keeps the native cursor everywhere, omit the group entirely.
     - Omit the whole `motion` group if the reference has none of
       hover/entrance/ambient/scroll/cursor — most references, especially
       simple headers, won't have all five. **If two skeleton elements

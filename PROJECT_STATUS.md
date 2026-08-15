@@ -164,7 +164,20 @@ them, they may have been restarted since):
 | Web app | `design-reference-web`, `next dev` | `:3000` |
 | MinIO | `design-reference-backend/.bin/minio`, `make minio` | `:9010` (API), `:9011` (console) |
 
-`.mcp.json` in this repo points the plugin at `http://localhost:8000/mcp`.
+`.mcp.json` in this repo points the plugin at the production deployment
+(`https://design-reference-web.vercel.app/api/mcp`) by default; set
+`DESIGN_REFERENCE_MCP_URL=http://localhost:3000/api/mcp` in the environment
+before launching Claude Code to use a local `next dev` instance instead
+(`claude-local-mcp.cmd` in the `design-reference-web` repo does this for you).
+Either way the MCP endpoint requires OAuth — authenticate once per issuer via
+`/mcp` in a Claude Code session.
+
+OpenCode has the same setup: `mcp."design-reference"` in
+`~/.config/opencode/opencode.json` (prod default) plus a project-level
+`opencode.json` in `design-reference-web` overriding the URL to localhost
+when working there, and this repo's `skills/` registered via `skills.paths`.
+Authenticate with `opencode mcp auth design-reference` (per issuer, after
+`opencode mcp logout design-reference` when switching between prod and local).
 
 **Three test layers, cheapest first:**
 

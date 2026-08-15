@@ -2,7 +2,7 @@
   "mcpServers": {
     "design-reference": {
       "type": "http",
-      "url": "${DESIGN_REFERENCE_MCP_URL:-http://localhost:3000/api/mcp}"
+      "url": "${DESIGN_REFERENCE_MCP_URL:-https://design-reference-web.vercel.app/api/mcp}"
     }
   }
 }
